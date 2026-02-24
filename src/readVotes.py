@@ -1,13 +1,29 @@
+# Obtains the votes casted by each party for each proposal. Votes can be
+# unanimous or split.
 # 
+# If unanimous, the document showcases a "approved unanimously" ("Aprovado por
+# unanimidade"). In case of split votes, a party can vote for or against, or
+# abstain. The document displays a table with the votes, where each line
+# contains the vote (for, against, or no vote) and each column the parties. A
+# cross shows the vote intention. If a party splits its votes, the cross is
+# maintained, with the number of "dissidents" written on its respective line.
+# 
+# Aditionally, deputees can fail to show up. In that case, unanimous votes can
+# still happen, with their no show referenced after the vote aftermath. If votes
+# are split, their column is empty
+# 
+# Bruno Cotrim, 24/02/2026
 
 import pymupdf
 import re
 import numpy as np
 import proposalClass
 
-# While normally when someone is away, he is away for the whole voting session,
-# he can be late/leave earlier. More importantly, this way, we ensure it can
-# account for the boycott of certain proposals
+# When someone is away, he is usually away for the whole session. This means it
+# is much faster to check that at the beginining of the document and never check
+# ever again. However, not only he can be late/leave earlier, but this way we 
+# also ensure certain proposals boycotts are accounted for. And we all need know
+# that controversies generate popular tweets
 def getAway(parties, page, rect):
     text = page.get_text('text', clip = rect)
 

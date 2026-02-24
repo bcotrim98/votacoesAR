@@ -1,7 +1,16 @@
-# Reads the text in each proposed document
+# Reads the text associated to which proposal.
 # 
-# Note 1 (OUTDATED) - two hyphen types: long dash '–' (separates proposals), and normal
-# hyphen '-' (compound words)
+# For each proposal's set o coordinates, all the text is extracted. The text is
+# then processed, depending on if it's a "regular proposal" or a "special case"
+# (requirements, special texts, etc).
+# 
+# If we have a "regular proposal", the project type, party/organisation
+# proposing, the text and its html link in the parliament website are extracted
+# 
+# If we have a special case, the text and all found html links are extracted
+# 
+# Note 1 (OUTDATED) - two hyphen types: long dash '–' (separates proposals), and
+# normal hyphen '-' (compound words)
 # 
 # Note 1 - two hyphen types: long dash '–' and normal hyphen '-'. From the
 # original note, you can see that I was a hopeful man, but these files are
@@ -15,8 +24,6 @@
 # it's an important detail
 # 
 # Bruno Cotrim, 08/02/2026
-
-# TODO: Tipo de proposta? Deliberação, votação na generalidade, etc
 
 import pymupdf
 import re

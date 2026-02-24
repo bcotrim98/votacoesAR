@@ -1,6 +1,8 @@
+# This Python project obtains, processes and publishes on social media (BlueSky,
+# in this case) the various votes casted for the different proposals on the
+# Portuguese Assembly by the different elected parties and deputees
 # 
-# 
-# 
+# Bruno Cotrim, 24/02/2026
 
 import readPDF
 
