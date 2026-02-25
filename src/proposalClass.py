@@ -20,37 +20,37 @@ import numpy as np
 # TODO: Respect character limit
 class Document:
     def __init__(self, text, nParties):
-        self.text = text
+        self._text = text
         
-        self.status = 'Rejeitado \U0001F534\n\n' # \u274c
+        self._status = 'Rejeitado \U0001F534\n\n' # \u274c
         
         # As parties may sometimes not vote as a block, we need to actually count how many deputees vote for each proposal
         # Line order: for, against, absent, no show
-        self.votes = np.zeros((4, nParties), dtype = int)
+        self._votes = np.zeros((4, nParties), dtype = int)
 
     def approveProp(self, propStatus):
-        self.status = 'Aprovado \U0001F7E2\n\n' # \u2705'
+        self._status = 'Aprovado \U0001F7E2\n\n' # \u2705'
             
     def setLink(self, propURL):
         pass
 
     def setVotes(self, propVotes):
-        self.votes = propVotes
+        self._votes = propVotes
 
     def addVotes(self, partyID, vote, nVotes):
-        self.votes[vote, partyID] += nVotes
+        self._votes[vote, partyID] += nVotes
 
     def getCurrTweetLine(self, vtType, parties):
         partiesIn = []
 
-        for i, (p, nV) in enumerate(zip(parties, self.votes[vtType])):
+        for i, (p, nV) in enumerate(zip(parties, self._votes[vtType])):
             if nV == 0:
                 continue
 
             currParty = f'{p}'
 
             # If a party splits votes
-            if self.votes[:, i].sum() != nV:
+            if self._votes[:, i].sum() != nV:
                 currParty += f' ({nV})'
 
             partiesIn.append(currParty)
@@ -59,17 +59,17 @@ class Document:
 
         return currLine
     
-    def writeTweetHeader(self):
+    def writeTweetProp(self):
         pass
 
-    def writeTweetBody(self, parties):
-        tweet = self.writeTweetHeader()
+    def writeTweetVotes(self, parties):
+        tweet = ''
 
         # Unanimous vote
-        if self.votes[1].sum() + self.votes[2].sum() == 0:
+        if self._votes[1].sum() + self._votes[2].sum() == 0:
             tweet += 'Aprovado com unanimidade \U0001F7E2' # \u2705'
 
-            if self.votes[3].sum() == 0:
+            if self._votes[3].sum() == 0:
                 return tweet
 
             # No shows still count for unanimity, apparently
@@ -78,12 +78,12 @@ class Document:
             return tweet
 
         # Non-unanimous vote
-        tweet += self.status
+        tweet += self._status
 
         voteActions = ('Votos a favor', 'Votos contra', 'Abstenção', 'Ausentes')
         partyActions = [''] * 4
 
-        for i, line in enumerate(self.votes):
+        for i, line in enumerate(self._votes):
             if line.sum() == 0:
                 continue
 
@@ -92,47 +92,47 @@ class Document:
 
         return tweet
     
-    def writePropLink(self):
+    def writeTweetWebLink(self):
         pass
 
 class Proposal(Document):
     def __init__(self, text, nParties):
         super().__init__(text, nParties)
-        self.type = ''
-        self.party = ''
-        self.link = '' # web link for the proposal
+        self._type = ''
+        self._party = ''
+        self._link = '' # web link for the proposal
 
     def setType(self, propType):
-        self.type = propType
+        self._type = propType
 
     def setParty(self, propParty):
-        self.party = propParty
+        self._party = propParty
 
     def setLink(self, propURL):
-        self.link = propURL[0][0]
+        self._link = propURL[0][0]
 
-    def writeTweetHeader(self):
-        return f'{self.type} ({self.party}) – {self.text}\n\n'
+    def writeTweetProp(self):
+        return f'{self._type} ({self._party}) – {self._text}\n\n'
     
-    def writePropLink(self):
-        return f'Link para a proposta: {self.link}'
+    def writeTweetWebLink(self):
+        return f'Link para a proposta: {self._link}'
 
 # Requirements, final texts, etc
 class Other(Document):
     def __init__(self, text, nParties):
         super().__init__(text, nParties)
-        self.link = []
+        self._link = []
 
     def setLink(self, propURL):
-        self.link = propURL
+        self._link = propURL
 
-    def writeTweetHeader(self):
-        return f'{self.text}\n\n'
+    def writeTweetProp(self):
+        return f'{self._text}\n\n'
     
-    def writePropLink(self):
+    def writeTweetWebLink(self):
         tweet = f'Links relevantes:\n'
 
-        for currLink in self.link:
+        for currLink in self._link:
             tweet += f'{currLink[1]}: {currLink[0]}\n'
 
         return tweet
