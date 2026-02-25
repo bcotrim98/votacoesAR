@@ -35,28 +35,28 @@ def getUserInput():
     
     args = parser.parse_args()
 
-    if args.dates:
-        if len(args.dates) > 2:
+    if args.date:
+        if len(args.date) > 2:
             parser.error('Please include up to two dates')
 
     return args
 
 def getProps(date):
     fname = getFiles.getPDFName(date)
-    props = readPDF.readFile(fname)
+    props, parties = readPDF.readFile(fname)
 
-    return props
+    return props, parties
 
 if __name__ == '__main__':
     userInput = getUserInput()
-    props = getProps(userInput['date'])
+    props, parties = getProps(userInput.date)
 
-    with open(userInput['outFName'], 'w', encoding = 'utf8') as f:
+    with open(userInput.outFile, 'w', encoding = 'utf8') as f:
         for p in props:
-            f.write('---------------------\n')
+            f.write('---------------------\n\n')
             f.write(p.writeTweetProp())
             f.write('\n')
-            f.write(p.writeTweetVotes())
+            f.write(p.writeTweetVotes(parties))
             f.write('\n')
             f.write(p.writeTweetWebLink())
-            f.write('---------------------\n\n\n')
+            f.write('\n---------------------\n\n\n')

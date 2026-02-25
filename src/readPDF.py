@@ -34,4 +34,4 @@ def readFile(pdfFiles):
 
         pdfDoc.close()
 
-    return props
+    return props, input['parties']
