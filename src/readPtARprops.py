@@ -30,7 +30,7 @@ def getUserInput():
     parser.add_argument('outFile', help = 'Proposals tweets output file name')
     # parser.add_argument('date0
 
-    parser.add_argument('--dates', type = getDate, nargs = '+', help = 
+    parser.add_argument('--date', type = getDate, nargs = '+', help = 
                              'Introduce up to two dates in \'YYYY-MM-DD\' format')
     
     args = parser.parse_args()
@@ -49,7 +49,7 @@ def getProps(date):
 
 if __name__ == '__main__':
     userInput = getUserInput()
-    props = getProps()
+    props = getProps(userInput['date'])
 
     with open(userInput['outFName'], 'w', encoding = 'utf8') as f:
         for p in props:
