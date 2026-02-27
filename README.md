@@ -3,40 +3,27 @@ This small software retrieves PDF files containing the votes cast by various dep
 (As of today, the scraping of documents from the Portuguese Republic Assembly archive has not been implemented)
 
 The two main modules are:
-
     - readPtARprops.py - Gets all the documents with the votes between the desired dates, stores them in the 'documents/' folder and processes them. Results are stored in the output file requested by the user
-    
     - blueSkyBot.py (in development) - Runs readPtARprops.py and posts them to BlueSky. Username and password are introduced as input on the terminal
 
 Additionally, 3 input files must be provided:
-
-
     - parties.txt - Parties and the associated number of deputees, from most to least deputees. If the number of deputees is tied, check one of the tables for the order
-    
     - vote_types.txt - Different types of proposals discussed (e.g., deliberations, final votes) for the document to be able to locate them. The user can exclude proposal types if he deems them irrelevant for the purpose ('0'), or include them ('1') otherwise. The file follows:
-    
         0 - vote_type1
-    
         1 - vote_type2
-        
-        ...
-        
+        ...        
     - col_width.txt (band-aid fix) - helps the PyMuPDF locate the columns within the table. A solution that better defines the dividing line will be developed after
 
 Developed on Python 3.12.3. Required pip libraries can be found in pip_libs_to_install.txt
 
 Relevant links:
-
     - Voting archive - https://www.parlamento.pt/ArquivoDocumentacao/Paginas/Arquivodevotacoes.aspx
 
 Some inspirations (no association with them):
-
     - https://www.twitter.com/ArVotacoes - similar idea
-    
     - https://www.votacoes.pt/ - website with all the proposals organised, with available filters
 
 Contact information:
-
     - Bruno Cotrim - https://www.linkedin.com/in/brunorcotrim/
 
 Side note 1 - I developed this as a way to learn Python while doing something that could be useful in its own right. Feel free to check the code and suggest improvements
