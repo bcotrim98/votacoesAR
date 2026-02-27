@@ -115,7 +115,7 @@ class Proposal(Document):
         return f'{self._type} ({self._party}) – {self._text}\n\n'
     
     def writeTweetWebLink(self):
-        return f'Link para a proposta: {self._link}'
+        return [f'Link para a proposta: {self._link}']
 
 # Requirements, final texts, etc
 class Other(Document):
@@ -130,9 +130,9 @@ class Other(Document):
         return f'{self._text}\n\n'
     
     def writeTweetWebLink(self):
-        tweet = f'Links relevantes:\n'
+        tweet = []
 
         for currLink in self._link:
-            tweet += f'{currLink[1]}: {currLink[0]}\n'
+            tweet.append(f'{currLink[1]}: {currLink[0]}\n')
 
         return tweet

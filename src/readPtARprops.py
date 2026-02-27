@@ -18,17 +18,17 @@ def getDate(dateString):
 
 def getUserInput():
     descriptText = ('This Python project obtains, processes and publishes on ' +
-    'social media (BlueSky, in this case) the various votes casted for the ' +
-    'different proposals on the Portuguese Assembly by the different elected ' +
-    'parties and deputees\n\nInput arguments:\tOutput file name\n\t--dates:\n' +
-    '\t\tEmpty argument assumes today\n\t\tOne argument assumes from that day ' +
-    'to today\n\t\tTwo arguments assumes from furthest to closest day')
+        'social media (BlueSky, in this case) the various votes casted for ' +
+        'the different proposals on the Portuguese Assembly by the different ' +
+        'elected parties and deputees\n\nInput arguments:\tOutput file name\n\t' + 
+        '--dates:\n\t\tEmpty argument assumes today\n\t\tOne argument assumes ' +
+        'from that day to today\n\t\tTwo arguments assumes from furthest to ' +
+        'closest day')
 
     parser = argparse.ArgumentParser(description = descriptText,
                                      epilog = 'Bruno Cotrim, 24/02/2026')
     
     parser.add_argument('outFile', help = 'Proposals tweets output file name')
-    # parser.add_argument('date0
 
     parser.add_argument('--date', type = getDate, nargs = '+', help = 
                              'Introduce up to two dates in \'YYYY-MM-DD\' format')
