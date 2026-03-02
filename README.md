@@ -2,33 +2,65 @@ This small software retrieves PDF files containing the votes cast by various dep
 
 (As of today, the scraping of documents from the Portuguese Republic Assembly archive has not been implemented)
 
-The two main modules are:
-    - readPtARprops.py - Gets all the documents with the votes between the desired dates, stores them in the 'documents/' folder and processes them. Results are stored in the output file requested by the user
-    - blueSkyBot.py (in development) - Runs readPtARprops.py and posts them to BlueSky. Username and password are introduced as input on the terminal
+The repository contains:
 
-Additionally, 3 input files must be provided:
-    - parties.txt - Parties and the associated number of deputees, from most to least deputees. If the number of deputees is tied, check one of the tables for the order
-    - vote_types.txt - Different types of proposals discussed (e.g., deliberations, final votes) for the document to be able to locate them. The user can exclude proposal types if he deems them irrelevant for the purpose ('0'), or include them ('1') otherwise. The file follows:
-        0 - vote_type1
-        1 - vote_type2
-        ...        
-    - col_width.txt (band-aid fix) - helps the PyMuPDF locate the columns within the table. A solution that better defines the dividing line will be developed after
+    |-- input_files
+    |    |-- parties.txt
+    |    |-- vote_types.txt
+    |    |-- col_width.txt
+    |-- documents
+    |    |-- (PDF documents to be read)
+    |-- src
+    |    |-- blueSkyBot.py
+    |    |-- getFiles.py
+    |    |-- getPropCoords.py
+    |    |-- proposalClass.py
+    |    |-- readInput.py
+    |    |-- readPDF.py
+    |    |-- readProp.py
+    |    |-- readPtARprops.py
+    |    |-- readVotes.py
+    |-- README.md
+    |-- pip_libs_to_install
 
-Developed on Python 3.12.3. Required pip libraries can be found in pip_libs_to_install.txt
+Requirements:
+
+    - Python 3.12.3
+    - Required pip libraries can be found in pip_libs_to_install.txt
+
+How to run: The user can run the module readPtARprops.py from the command module or call it from another module, as in the blueSkyBot module. From the command line, an output file name must be included as an input argument. As of today, the files with the proposals must be included in the 'documents/' folder.
+
+3 input files must be provided: 'parties.txt', 'vote_types.txt' and 'col_width.txt'
+
+
+parties.txt - Parties and the associated number of deputees, from most to least deputees. If the number of deputees is tied, check one of the tables for the order
+
+vote_types.txt - Different types of proposals discussed (e.g., deliberations, final votes) for the document to be able to locate them. The user can exclude proposal types if he deems them irrelevant for the purpose ('0'), or include them ('1') otherwise. The file follows:
+
+    0 - vote_type1
+    1 - vote_type2
+    ...
+    
+col_width.txt (band-aid fix) - helps the PyMuPDF locate the columns within the table. A solution that better defines the dividing line will be developed after
+
+-------------------------------------------
+
+About the project: I developed this as a way to learn Python while doing something that could be useful in its own right. Feel free to check the code and suggest improvements
+
+Side note - My ability to develop this code freely is a testament to the development of our Democracy in these past 50+ years. It's our ability to scrutinise and take people accountable for their actions that makes democracy possible, not some left/right ideologies. And, for that, we need the most accurate representation of reality possible, in other words, truth. Some far-right populists may say some outrageous things for shock-value, but that does not fundamentally undermines democracy. Dismissing truth, lying, discrediting credible reports, that is the real threat to democracy, and that can come from everywhere, whether an extreme or centre politician, unethical journalist or friend.
 
 Relevant links:
+
     - Voting archive - https://www.parlamento.pt/ArquivoDocumentacao/Paginas/Arquivodevotacoes.aspx
 
 Some inspirations (no association with them):
+
     - https://www.twitter.com/ArVotacoes - similar idea
     - https://www.votacoes.pt/ - website with all the proposals organised, with available filters
 
-Contact information:
-    - Bruno Cotrim - https://www.linkedin.com/in/brunorcotrim/
+Contact information: Bruno Cotrim - https://www.linkedin.com/in/brunorcotrim/
 
-Side note 1 - I developed this as a way to learn Python while doing something that could be useful in its own right. Feel free to check the code and suggest improvements
-
-Side note 2 - My ability to develop this code freely is a testament to the development of our Democracy in these past 50+ years. It's our ability to scrutinise and take people accountable for their actions that makes democracy possible, not some left/right ideologies. And, for that, we need the most accurate representation of reality possible, in other words, truth. Some far-right populists may say some outrageous things for shock-value, but that does not fundamentally undermines democracy. Dismissing truth, lying, discrediting credible reports, that is the real threat to democracy, and that can come from everywhere, whether an extreme or centre politician, unethical journalist or friend.
+-------------------------------------------
 
 Copyright (c) 2026 Bruno Ribeiro Cotrim
 
