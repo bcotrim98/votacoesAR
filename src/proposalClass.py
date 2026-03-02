@@ -21,12 +21,16 @@ import numpy as np
 class Document:
     def __init__(self, text, nParties):
         self._text = text
-        
+        self._date = ''
+
         self._status = 'Rejeitado \U0001F534\n\n' # \u274c
         
         # As parties may sometimes not vote as a block, we need to actually count how many deputees vote for each proposal
         # Line order: for, against, absent, no show
         self._votes = np.zeros((4, nParties), dtype = int)
+
+    def setDate(self, date):
+        self._date = date
 
     def approveProp(self, propStatus):
         self._status = 'Aprovado \U0001F7E2\n\n' # \u2705'
@@ -80,7 +84,7 @@ class Document:
         # Non-unanimous vote
         tweet += self._status
 
-        voteActions = ('Votos a favor', 'Votos contra', 'Abstenção', 'Ausentes')
+        voteActions = ('\U0001F44D', '\U0001F44E', '\u26AA', 'Ausentes')
         partyActions = [''] * 4
 
         for i, line in enumerate(self._votes):
@@ -88,7 +92,7 @@ class Document:
                 continue
 
             partyActions[i] += self.getCurrTweetLine(i, parties)
-            tweet += f'{voteActions[i]}: {partyActions[i]}\n'
+            tweet += f'{voteActions[i]} {partyActions[i]}\n'
 
         return tweet
     
@@ -112,10 +116,10 @@ class Proposal(Document):
         self._link = propURL[0][0]
 
     def writeTweetProp(self):
-        return f'{self._type} ({self._party}) – {self._text}\n\n'
+        return f'{self._date}\n{self._type} ({self._party}) – {self._text}\n\n'
     
     def writeTweetWebLink(self):
-        return [f'Link para a proposta: {self._link}']
+        return f'Link para a proposta: {self._link}'
 
 # Requirements, final texts, etc
 class Other(Document):
@@ -127,12 +131,12 @@ class Other(Document):
         self._link = propURL
 
     def writeTweetProp(self):
-        return f'{self._text}\n\n'
+        return f'{self._date}\n{self._text}\n\n'
     
     def writeTweetWebLink(self):
-        tweet = []
+        tweet = ''
 
         for currLink in self._link:
-            tweet.append(f'{currLink[1]}: {currLink[0]}\n')
+            tweet += f'{currLink[1]}: {currLink[0]}\n'
 
         return tweet

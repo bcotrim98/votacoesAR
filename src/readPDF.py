@@ -8,6 +8,7 @@
 # 
 # Bruno Cotrim, 24/02/2026
 
+import re
 import pymupdf
 import readInput
 import getPropCoords
@@ -15,18 +16,26 @@ import proposalClass
 import readProp
 import readVotes
 
+def getDate(fname):
+    dates = re.findall(r'\d{4}-\d{2}-\d{2}', fname)
+    voteDate = dates[1] if len(dates) > 1 else None
+    voteDate = re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3-\2-\1', voteDate) # DD-MM-YYYY
+
+    return voteDate
+
 def readFile(pdfFiles):
     props = []
 
     for f in pdfFiles:
         pdfDoc = pymupdf.open(f)
+        date = getDate(f)
 
         for page in pdfDoc:
             input = readInput.getInput('input_files/parties.txt', 'input_files/vote_types.txt',
                                        'input_files/col_width.txt')
             coords = getPropCoords.getCoords(page, input['voteTypes'], input['vtTypeState'])
 
-            currProps = readProp.readText(page, coords['propCoords'], len(input['parties']))
+            currProps = readProp.readText(page, coords['propCoords'], len(input['parties']), date)
             currProps = readVotes.getVotes(page, coords['voteCoords'], currProps,
                                         input['parties'], input['nDep'], input['colWidth'])
 

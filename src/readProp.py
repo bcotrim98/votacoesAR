@@ -84,7 +84,7 @@ def getUrlText(page, links):
 
     return propUrl
 
-def readText(page, coords, nParties):
+def readText(page, coords, nParties, date):
     out = []
     links = page.get_links() # There's no clip for links
     n = 0
@@ -99,6 +99,8 @@ def readText(page, coords, nParties):
         propLink, n = getLinks(links, rect, n)
         propUrl = getUrlText(page, propLink)
         currProp.setLink(propUrl)
+
+        currProp.setDate(date)
 
         out.append(currProp)
 
