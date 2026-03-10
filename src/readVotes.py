@@ -50,15 +50,16 @@ def setUnanimousVote(page, prop, parties, nDep, rect):
         # Should I consider when a single member of a party does not
         # show up? I do not think that has happened yet
 
-def getTableVotes(prop, table, nDep):
+def getTableVotes(prop, table, nDep, currOrder):
     for j, fullCol in enumerate(zip(*table)):
         col = fullCol[2:5]
         vtLine = -1
 
         for i, line in enumerate(col):
             # This assumes a non-block vote always has a cross
-            if line.upper() == 'X':
-                prop.addVotes(j, i, nDep[j])
+            # The check is also relaxed because 'XX' has been found
+            if 'X' in line.upper():
+                prop.addVotes(j, currOrder[i], nDep[j])
                 vtLine = i
                 break
 
@@ -71,7 +72,7 @@ def getTableVotes(prop, table, nDep):
                 prop.addVotes(j, i, int(line))
                 prop.addVotes(j, vtLine, -int(line))
 
-def getVotes(page, voteCoords, props, parties, nDep, colWidth):
+def getVotes(page, voteCoords, props, parties, nDep, currOrder, colWidth):
     colLines = [page.rect[2]*cW for cW in colWidth]
 
     for p, c in zip(props, voteCoords):
@@ -83,7 +84,7 @@ def getVotes(page, voteCoords, props, parties, nDep, colWidth):
         else:
             tab = page.find_tables(clip = rect, vertical_strategy = "explicit",
                                    vertical_lines = colLines)
-            getTableVotes(p, tab.tables[0].extract(), nDep)
+            getTableVotes(p, tab.tables[0].extract(), nDep, currOrder)
             propStatus = page.search_for('aprovado', clip = rect)
 
             if propStatus:

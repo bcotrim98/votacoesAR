@@ -27,13 +27,25 @@
 
 import pymupdf
 import re
+import copy
 import proposalClass
 
 def getType():
     pass
 
-# Removes spaces and line breaks
+def excludeNotes(text):
+    noteFound = re.search(r'Nota.*?\n(.*)', text, re.DOTALL)
+
+    if not noteFound:
+        return text
+    
+    return noteFound.group(1)
+
+# Removes notes from previous votes, spaces and line breaks
 def cleanText(text):
+    # Notes might be added
+    text = excludeNotes(text)
+
     text = re.sub(r'^\s*\n\s*', '', text)
     text = re.sub(r'\s*\n\s*$', '', text)
     text = re.sub(r'\-\s*\n\s*', '-', text) # See note 2 on top
@@ -42,6 +54,12 @@ def cleanText(text):
     return text
 
 def getProp(text, nParties):
+    # A vote can be split in multiple points
+    prevProp = re.search(r'^Pontos?\b.+', text)
+
+    if prevProp:
+        return prevProp.group(0)
+
     # r'^(Projeto [\w\s]+) n\.º .+ \((\w+)\) - (.+)'
     type = re.search(r'^((?:Projeto|Proposta) .+?) n\.º .+ \((.+?)\) [\-\u2010-\u2015] (.+)', text)
 
@@ -78,9 +96,19 @@ def getLinks(links, rect, n):
 def getUrlText(page, links):
     propUrl = []
 
+    # If there is a line break in the text where the link is embedded, the same
+    # link twice associated to the text in each line
+    lastLink = ''
+
     for currLink in links:
         tempText = page.get_text('text', clip = currLink.get('from'))
-        propUrl.append([currLink.get('uri'), tempText.strip()])
+
+        if not lastLink == currLink.get('uri'):
+            propUrl.append([currLink.get('uri'), tempText.strip()])
+            lastLink = currLink.get('uri')
+
+        else:
+            propUrl[-1][1] += ' ' + tempText.strip()
 
     return propUrl
 
@@ -96,11 +124,17 @@ def readText(page, coords, nParties, date):
         text = cleanText(text)
         currProp = getProp(text, nParties)
 
-        propLink, n = getLinks(links, rect, n)
-        propUrl = getUrlText(page, propLink)
-        currProp.setLink(propUrl)
+        if isinstance(currProp, str):
+            ptNb = currProp
+            currProp = copy.deepcopy(out[-1])
+            currProp.setNewVotingPoint(ptNb)
 
-        currProp.setDate(date)
+        else:
+            propLink, n = getLinks(links, rect, n)
+            propUrl = getUrlText(page, propLink)
+            currProp.setLink(propUrl)
+
+            currProp.setDate(date)
 
         out.append(currProp)
 

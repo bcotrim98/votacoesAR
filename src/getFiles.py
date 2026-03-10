@@ -10,7 +10,7 @@ import os
 def getPDFName(date):
     # TODO: Get PDFs
 
-    filesFound = os.listdir('documents/')
+    filesFound = sorted(os.listdir('documents/'))
     fname = [('documents/' + f) for f in filesFound if f.endswith('.pdf')]
 
     return fname

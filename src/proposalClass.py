@@ -16,6 +16,7 @@
 # Bruno Cotrim, 07/02/2026
 
 import numpy as np
+import re
 
 # TODO: Respect character limit
 class Document:
@@ -44,6 +45,12 @@ class Document:
     def addVotes(self, partyID, vote, nVotes):
         self._votes[vote, partyID] += nVotes
 
+    # A proposal does not need to be voted integralliy. For example, points 1
+    # and 2 may be approved, while point 3 is rejected
+    def setNewVotingPoint(self, ptNb):
+        newText = re.sub(r'Pontos?\b.+$', ptNb, self._text)
+        self._text = newText
+
     def getCurrTweetLine(self, vtType, parties):
         partiesIn = []
 
@@ -71,7 +78,7 @@ class Document:
 
         # Unanimous vote
         if self._votes[1].sum() + self._votes[2].sum() == 0:
-            tweet += 'Aprovado com unanimidade \U0001F7E2' # \u2705'
+            tweet += 'Aprovado por unanimidade \U0001F7E2' # \u2705'
 
             if self._votes[3].sum() == 0:
                 return tweet
@@ -84,7 +91,7 @@ class Document:
         # Non-unanimous vote
         tweet += self._status
 
-        voteActions = ('\U0001F44D', '\U0001F44E', '\u26AA', 'Ausentes')
+        voteActions = ('\U0001F44D', '\U0001F44E', '\u26AA', 'Ausentes: ')
         partyActions = [''] * 4
 
         for i, line in enumerate(self._votes):
@@ -96,7 +103,7 @@ class Document:
 
         return tweet
     
-    def writeTweetWebLink(self):
+    def getTweetWebLink(self):
         pass
 
 class Proposal(Document):
@@ -116,10 +123,12 @@ class Proposal(Document):
         self._link = propURL[0][0]
 
     def writeTweetProp(self):
-        return f'{self._date}\n{self._type} ({self._party}) – {self._text}\n\n'
+        return f'{self._type} ({self._party}) \u2014 {self._date}\n\n{self._text}\n\n'
     
-    def writeTweetWebLink(self):
-        return f'Link para a proposta: {self._link}'
+    # If the object is from the "Other" class, it can have multiple links, one
+    # associated to text we do not know at compile time
+    def getTweetWebLink(self):
+        return [['Link para a proposta: ', f'{self._link}']]
 
 # Requirements, final texts, etc
 class Other(Document):
@@ -131,12 +140,12 @@ class Other(Document):
         self._link = propURL
 
     def writeTweetProp(self):
-        return f'{self._date}\n{self._text}\n\n'
+        return f'{self._date}\n\n{self._text}\n\n'
     
-    def writeTweetWebLink(self):
-        tweet = ''
+    def getTweetWebLink(self):
+        tweet = []
 
         for currLink in self._link:
-            tweet += f'{currLink[1]}: {currLink[0]}\n'
+            tweet.append([f'{currLink[1]}: ', f'{currLink[0]}'])
 
         return tweet

@@ -58,5 +58,10 @@ if __name__ == '__main__':
             f.write('\n')
             f.write(p.writeTweetVotes(parties))
             f.write('\n')
-            f.write(p.writeTweetWebLink())
+
+            links = p.getTweetWebLink()
+
+            for l in links:
+                f.write(f'{l[0]}{l[1]}\n')
+
             f.write('\n---------------------\n\n\n')

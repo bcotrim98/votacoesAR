@@ -4,7 +4,7 @@
 
 import argparse
 import getpass
-from atproto import Client
+from atproto import Client, client_utils
 import time
 from math import ceil
 import readPtARprops
@@ -75,34 +75,46 @@ def getTweet(prop, parties, charLimit):
         tweet = breakTweet(tweetText, charLimit)
         tweet.append(tweetVotes)
 
-    link = prop.writeTweetWebLink()
+    links = prop.getTweetWebLink()
 
-    if len(link) < charLimit:
-        tweet.append(link)
-        return tweet
-    
-    allLinks = link.split('\n')
+    return tweet, links
 
-    for l in allLinks:
-        tweet.append(l.strip)
-
-    return tweet
-
-def postTweets(tweet, client):
+def postTweets(tweet, links, client):
     try:
-        mainTweet = client.send_post(text = tweet[0], langs = ['pt'])
-        lastTweet = mainTweet
+        currTweet = client.send_post(text = tweet[0], langs = ['pt'])
+        mainTweetRef = {'uri': currTweet.uri, 'cid': currTweet.cid}
+        lastTweetRef = mainTweetRef
 
-        for t in tweet[1:]:
-            time.sleep(3)
-            lastTweet = client.send_post(
-                text = t,
+        if len(tweet) > 1:
+            for t in tweet[1:]:
+                time.sleep(2)
+                currTweet = client.send_post(
+                    text = t,
+                    reply_to = {
+                        'root' : mainTweetRef,
+                        'parent' : lastTweetRef
+                    },
+                    langs = ['pt']
+                )
+
+                lastTweetRef = {'uri': currTweet.uri, 'cid': currTweet.cid}
+        
+        # We need to build links for them to be clickable and for them to have a
+        # preview
+        for l in links:
+            time.sleep(2)
+            tweetText = client_utils.TextBuilder()
+            tweetText.text(l[0]).link(l[1], l[1])
+            currTweet = client.send_post(
+                text = tweetText,
                 reply_to = {
-                    'root' : mainTweet,
-                    'parent' : lastTweet
+                    'root' : mainTweetRef,
+                    'parent' : lastTweetRef
                 },
                 langs = ['pt']
             )
+
+            lastTweetRef = {'uri': currTweet.uri, 'cid': currTweet.cid}
 
     except Exception as e:
         print(f'Error when posting: {e}\n{tweet[0]}')
@@ -116,6 +128,6 @@ if __name__ == '__main__':
         exit()
 
     for p in props:
-        tweet = getTweet(p, parties, 300)
-        postTweets(tweet, client)
-        time.sleep(15)
+        tweet, links = getTweet(p, parties, 300)
+        postTweets(tweet, links, client)
+        time.sleep(10)
